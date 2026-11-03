@@ -58,7 +58,8 @@ create index profiles_email_idx on public.profiles (lower(email));
 create index profiles_deletion_requested_idx on public.profiles (deletion_requested_at) where deletion_requested_at is not null;
 
 create table public.user_roles (
-  user_id uuid not null references auth.users (id) on delete cascade,
+  -- References profiles (which cascade from auth.users) so roles can be joined via the API.
+  user_id uuid not null references public.profiles (id) on delete cascade,
   role text not null references public.roles (key) on delete cascade,
   granted_by uuid references auth.users (id) on delete set null,
   created_at timestamptz not null default now(),

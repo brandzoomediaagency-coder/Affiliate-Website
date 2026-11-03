@@ -1977,6 +1977,13 @@ export type Database = {
             referencedRelation: "roles";
             referencedColumns: ["key"];
           },
+          {
+            foreignKeyName: "user_roles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
         ];
       };
       wishlist_items: {

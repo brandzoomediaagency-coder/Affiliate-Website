@@ -126,7 +126,7 @@ export function WishlistLink() {
   const count = ids.size;
   return (
     <Link
-      href="/account/wishlist"
+      href="/wishlist"
       className="relative grid size-10 place-items-center rounded-xl text-ink-700 transition hover:bg-ink-900/5"
       aria-label={count ? `Wishlist (${count} saved)` : "Wishlist"}
     >
@@ -330,7 +330,7 @@ export function BottomNav() {
     { href: "/categories", label: "Categories", Icon: LayoutGrid },
     { href: "/deals", label: "Deals", Icon: Tag },
     { href: "/search", label: "Search", Icon: Search },
-    { href: "/account/wishlist", label: "Wishlist", Icon: Heart, badge: ids.size },
+    { href: "/wishlist", label: "Wishlist", Icon: Heart, badge: ids.size },
     { href: user ? "/account" : "/login", label: user ? "Account" : "Log in", Icon: User },
   ];
   return (
