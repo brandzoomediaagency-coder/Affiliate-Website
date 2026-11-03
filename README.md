@@ -295,5 +295,5 @@ The e2e scripts need `playwright` with Chromium (`npm i -D playwright && npx pla
 - **Images 400 locally with `npm start`:** Next 16 blocks private-IP images; this project allows them only when `NEXT_PUBLIC_SUPABASE_URL` is a local address.
 - **"SUPABASE_SECRET_KEY is not set" banner in admin:** clicks, newsletter, contact and user management need the server secret key.
 - **Amazon shows "Check Price" even with a price entered:** expected — enable the Creators API for displayable Amazon prices.
-- **Edits not visible publicly:** admin actions expire caches immediately; content listings otherwise refresh within 10 minutes (catalogue) or 1 hour (editorial).
+- **Edits not visible publicly:** admin actions expire caches immediately. Changes made directly in the database (seed scripts, SQL editor) appear when the cache refreshes — within 10 minutes for catalogue data and 1 hour for editorial content. Locally, `.next/cache` persists cached data between builds; delete it before `npm run build` to start fresh.
 - **Can't publish an article:** AI-assisted drafts need *Mark as editorially reviewed*; articles also need 300+ words and an excerpt or meta description.
