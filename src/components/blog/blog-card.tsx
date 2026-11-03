@@ -6,7 +6,8 @@ import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/misc";
 
 export function BlogCard({ post, priority = false }: { post: BlogPostCard; priority?: boolean }) {
-  const updated = post.contentUpdatedAt && post.publishedAt && post.contentUpdatedAt > post.publishedAt;
+  const updated =
+    post.contentUpdatedAt && post.publishedAt && formatDate(post.contentUpdatedAt) !== formatDate(post.publishedAt) && post.contentUpdatedAt > post.publishedAt;
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover">
       <Link href={`/blog/${post.slug}`} className="relative block aspect-[16/9] overflow-hidden bg-gradient-to-br from-brand-100 via-brand-50 to-saffron-50" tabIndex={-1} aria-hidden="true">

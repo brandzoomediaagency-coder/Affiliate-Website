@@ -6,7 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:types": "supabase gen types typescript --local --schema public > src/lib/supabase/database.types.ts",
+    "seed:content": "tsx scripts/seed-content.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "admin:grant": "tsx scripts/grant-admin.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -36,5 +45,8 @@
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=20.12"
   }
 }

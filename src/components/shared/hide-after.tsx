@@ -21,14 +21,9 @@ export function HideAfter({
   useEffect(() => {
     if (!expiresAt) return;
     const ms = new Date(expiresAt).getTime() - Date.now();
-    if (ms <= 0) {
-      setExpired(true);
-      return;
-    }
-    if (ms < 2_147_000_000) {
-      const t = setTimeout(() => setExpired(true), ms);
-      return () => clearTimeout(t);
-    }
+    if (ms >= 2_147_000_000) return; // beyond setTimeout's range; cache refresh handles it
+    const t = setTimeout(() => setExpired(true), Math.max(0, ms));
+    return () => clearTimeout(t);
   }, [expiresAt]);
 
   return <>{expired ? fallback : children}</>;

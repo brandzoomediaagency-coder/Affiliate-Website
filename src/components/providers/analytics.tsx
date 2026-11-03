@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Script from "next/script";
 import { captureUtm } from "@/lib/analytics/client";
 import { Button } from "@/components/ui/button";
 
 const CONSENT_KEY = "kw_analytics_consent";
+const CONSENT_EVENT = "kw-consent-change";
 type Consent = "granted" | "denied" | null;
 
 function readConsent(): Consent {
@@ -18,32 +19,39 @@ function readConsent(): Consent {
   }
 }
 
+function subscribe(callback: () => void) {
+  window.addEventListener(CONSENT_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(CONSENT_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function setConsent(value: Exclude<Consent, null> | null) {
+  try {
+    if (value) localStorage.setItem(CONSENT_KEY, value);
+    else localStorage.removeItem(CONSENT_KEY);
+  } catch {
+    // ignore
+  }
+  window.dispatchEvent(new Event(CONSENT_EVENT));
+}
+
 /**
  * Loads Google Analytics 4 ONLY after the visitor accepts analytics cookies.
  * First-party outbound-click analytics (no cookies, hashed IP) are always on
  * and are described in the Privacy Policy.
  */
 export function Analytics({ measurementId }: { measurementId: string }) {
-  const [consent, setConsent] = useState<Consent>(null);
-  const [mounted, setMounted] = useState(false);
+  // "unknown" on the server, so the banner never renders during SSR.
+  const consent = useSyncExternalStore<Consent | "unknown">(subscribe, readConsent, () => "unknown");
 
   useEffect(() => {
-    setConsent(readConsent());
-    setMounted(true);
     captureUtm();
-    const onChange = () => setConsent(readConsent());
-    window.addEventListener("kw-consent-change", onChange);
-    return () => window.removeEventListener("kw-consent-change", onChange);
   }, []);
 
-  const choose = (value: Exclude<Consent, null>) => {
-    try {
-      localStorage.setItem(CONSENT_KEY, value);
-    } catch {
-      // ignore
-    }
-    setConsent(value);
-  };
+  const choose = (value: Exclude<Consent, null>) => setConsent(value);
 
   return (
     <>
@@ -55,7 +63,7 @@ export function Analytics({ measurementId }: { measurementId: string }) {
           </Script>
         </>
       )}
-      {mounted && measurementId && consent === null && (
+      {measurementId && consent === null && (
         <div
           role="dialog"
           aria-label="Analytics cookie preferences"
@@ -89,12 +97,7 @@ export function ConsentResetButton() {
       type="button"
       className="text-left hover:text-white"
       onClick={() => {
-        try {
-          localStorage.removeItem(CONSENT_KEY);
-        } catch {
-          // ignore
-        }
-        window.dispatchEvent(new Event("kw-consent-change"));
+        setConsent(null);
         window.location.reload();
       }}
     >

@@ -57,13 +57,18 @@ export function formatDateTime(value: string | Date | null | undefined): string 
   return `${dateTimeFormatter.format(date)} IST`;
 }
 
+/** ISO timestamp N hours before now (helper keeps render functions pure). */
+export function hoursAgoIso(hours: number): string {
+  return new Date(Date.now() - hours * 3600 * 1000).toISOString();
+}
+
 export function truncate(text: string | null | undefined, max: number): string {
   if (!text) return "";
   const clean = text.replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
   const cut = clean.slice(0, max - 1);
   const lastSpace = cut.lastIndexOf(" ");
-  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trim()}…`;
+  return `${(lastSpace > max * 0.4 ? cut.slice(0, lastSpace) : cut).trim()}…`;
 }
 
 /** Strips markdown syntax to produce plain text (for meta descriptions etc.). */

@@ -35,8 +35,11 @@ export function DesktopNav({ categories }: { categories: NavCategory[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLLIElement>(null);
-
-  useEffect(() => setOpen(false), [pathname]);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
@@ -146,8 +149,11 @@ export function UserMenu() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => setOpen(false), [pathname]);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
@@ -222,8 +228,11 @@ export function MobileMenu({ categories }: { categories: NavCategory[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isStaff, signOut } = useAuth();
-
-  useEffect(() => setOpen(false), [pathname]);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {

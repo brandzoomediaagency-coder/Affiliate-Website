@@ -25,10 +25,12 @@ export function createPublicClient(): TypedSupabaseClient | null {
  * Use in Server Components behind <Suspense>, Server Actions and Route Handlers.
  */
 export async function createSessionClient() {
+  // Read cookies first so callers are always request-time (never prerendered),
+  // even when Supabase isn't configured yet.
+  const cookieStore = await cookies();
   if (!isSupabaseConfigured()) {
     throw new Error("Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.");
   }
-  const cookieStore = await cookies();
   return createServerClient<Database>(publicEnv.supabaseUrl, publicEnv.supabasePublishableKey, {
     cookies: {
       getAll() {

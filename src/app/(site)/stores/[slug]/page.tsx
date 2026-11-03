@@ -23,10 +23,11 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/stores/[slug]">) {
-  const [{ slug }, sp] = await Promise.all([params, searchParams]);
+  const { slug } = await params;
   const merchant = await getMerchantBySlug(slug);
+  // Resolve the entity before reading searchParams, so unknown slugs stay fully static.
   if (!merchant) return { title: "Store not found", robots: { index: false, follow: true } };
-  const filters = parseProductFilters(sp);
+  const filters = parseProductFilters(await searchParams);
   return buildMetadata({
     title: merchant.seoTitle || `${merchant.name} — products, offers & shopping tips`,
     description:

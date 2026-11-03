@@ -56,8 +56,9 @@ const nextConfig: NextConfig = {
     remotePatterns,
     formats: ["image/avif", "image/webp"],
     qualities: [60, 75, 85],
-    // Only needed when developing against a local Supabase instance.
-    dangerouslyAllowLocalIP: isLocalSupabase && process.env.NODE_ENV !== "production",
+    // Only enabled when Supabase itself runs locally (npx supabase start), so that
+    // `next start` works against the local stack. Never true for hosted Supabase.
+    dangerouslyAllowLocalIP: isLocalSupabase,
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

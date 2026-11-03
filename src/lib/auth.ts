@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createSessionClient } from "@/lib/supabase/clients";
 import { isSupabaseConfigured } from "@/lib/env";
 
@@ -22,7 +23,10 @@ export type SessionUser = {
  * role information. Memoised per request.
  */
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
-  if (!isSupabaseConfigured()) return null;
+  if (!isSupabaseConfigured()) {
+    await cookies(); // keep auth checks request-time even when unconfigured
+    return null;
+  }
   const supabase = await createSessionClient();
   const { data: claimsData, error } = await supabase.auth.getClaims();
   const userId = claimsData?.claims?.sub;

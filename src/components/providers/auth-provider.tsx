@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
+import { isSupabaseConfigured } from "@/lib/env";
 import { gaEvent } from "@/lib/analytics/client";
 
 type AuthState = {
@@ -18,14 +19,11 @@ const AuthContext = createContext<AuthState>({ user: null, isStaff: false, loadi
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isStaff, setIsStaff] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => isSupabaseConfigured());
 
   useEffect(() => {
     const supabase = getBrowserSupabase();
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
+    if (!supabase) return;
     let active = true;
 
     const loadRoles = async (u: User | null) => {

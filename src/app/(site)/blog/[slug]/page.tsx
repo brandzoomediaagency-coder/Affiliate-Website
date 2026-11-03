@@ -79,7 +79,8 @@ async function PostContent({ params }: { params: PageProps<"/blog/[slug]">["para
     affiliateHosts,
     siteHost: hostnameOf(publicEnv.siteUrl) ?? undefined,
   });
-  const updated = post.contentUpdatedAt && post.publishedAt && post.contentUpdatedAt > post.publishedAt;
+  const updated =
+    post.contentUpdatedAt && post.publishedAt && formatDate(post.contentUpdatedAt) !== formatDate(post.publishedAt) && post.contentUpdatedAt > post.publishedAt;
   const statements = merchants.map((m) => m.disclosureText).filter((t): t is string => Boolean(t));
 
   return (
@@ -88,7 +89,8 @@ async function PostContent({ params }: { params: PageProps<"/blog/[slug]">["para
       <JsonLd data={articleJsonLd(post, settings)} />
 
       <header className="border-b border-line bg-white">
-        <div className="container-page max-w-4xl py-8 sm:py-12">
+        <div className="container-page max-w-6xl py-8 sm:py-12">
+          <div className="max-w-4xl">
           <Breadcrumbs
             items={[
               { name: "Blog", href: "/blog" },
@@ -127,6 +129,7 @@ async function PostContent({ params }: { params: PageProps<"/blog/[slug]">["para
                 <Clock className="size-4" aria-hidden="true" /> {post.readingTimeMinutes} min read
               </span>
             )}
+          </div>
           </div>
         </div>
       </header>

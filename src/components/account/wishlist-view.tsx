@@ -24,21 +24,16 @@ export function WishlistView() {
   const key = [...ids].sort().join(",");
 
   useEffect(() => {
-    if (!ready) return;
-    const list = key ? key.split(",") : [];
-    if (list.length === 0) {
-      setProducts([]);
-      return;
-    }
+    if (!ready || !key) return;
     startTransition(async () => {
-      const cards = await fetchProductCards(list);
+      const cards = await fetchProductCards(key.split(","));
       setProducts(cards);
     });
   }, [key, ready]);
 
-  if (!ready || products === null) return <ProductGridSkeleton count={4} />;
+  if (!ready || (key && products === null)) return <ProductGridSkeleton count={4} />;
 
-  const visible = products.filter((p) => ids.has(p.id));
+  const visible = (products ?? []).filter((p) => ids.has(p.id));
   const unavailable = ids.size - visible.length;
 
   return (

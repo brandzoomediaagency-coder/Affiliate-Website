@@ -24,11 +24,12 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/categories/[slug]">) {
-  const [{ slug }, sp] = await Promise.all([params, searchParams]);
+  const { slug } = await params;
   const data = await getCategoryBySlug(slug);
+  // Resolve the entity before reading searchParams, so unknown slugs stay fully static.
   if (!data) return { title: "Category not found", robots: { index: false, follow: true } };
   const { category } = data;
-  const filters = parseProductFilters(sp);
+  const filters = parseProductFilters(await searchParams);
   const filtered = hasNonCanonicalFilters(filters) || filters.page > 1;
   return buildMetadata({
     title: category.seoTitle || `${category.name} — compare products & buying guides`,

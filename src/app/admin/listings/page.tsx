@@ -3,7 +3,7 @@ import { createSessionClient } from "@/lib/supabase/clients";
 import { verifyListingUrl } from "@/lib/actions/admin/listings";
 import { first } from "@/lib/search-params";
 import { formatINR } from "@/lib/pricing";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, hoursAgoIso } from "@/lib/utils";
 import { getMerchantOptions } from "@/lib/data/admin";
 import { AdminHeader, StatusBadge, Table, Td, Th } from "@/components/admin/ui";
 import { ConfirmAction } from "@/components/admin/admin-form";
@@ -28,7 +28,7 @@ export default async function AdminListingsPage({ searchParams }: PageProps<"/ad
     .select("id, variant_label, current_price, price_checked_at, price_source, availability, url_status, url_checked_at, is_active, affiliate_url, sync_error, merchant:merchants(name), product:products(id, name, status)", { count: "exact" });
   if (/^[0-9a-f-]{36}$/i.test(merchant)) query = query.eq("merchant_id", merchant);
   if (["unchecked", "ok", "redirected", "broken", "error"].includes(urlStatus)) query = query.eq("url_status", urlStatus);
-  if (stale) query = query.not("current_price", "is", null).lt("price_checked_at", new Date(Date.now() - 72 * 3600 * 1000).toISOString());
+  if (stale) query = query.not("current_price", "is", null).lt("price_checked_at", hoursAgoIso(72));
   const { data, count } = await query.order("updated_at", { ascending: false }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
   return (
